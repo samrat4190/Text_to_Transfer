@@ -1,0 +1,5 @@
+For landing page the test cases what we have in the excel sheet seems to be not present
+ in the feature  file,
+can you please let me know what all scenarios we exactly  have to fix if its
+existing in the feature file , else we will have to write the feature 
+file as well
