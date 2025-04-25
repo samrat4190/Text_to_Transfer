@@ -1,3 +1,3 @@
-For the landing page, it appears that some of the test cases listed in the Excel sheet are missing from the feature file.
+Please note that the default branch in this repository is develop. Kindly ensure that you check out and work only on the develop branch.
 
-Could you please help identify which scenarios we need to fix if they already exist in the feature file? For those that are missing, we will need to create new feature file entries accordingly.
+All changes are integrated into the main branch from develop as part of the release process.
