@@ -1,1 +1,22 @@
-Please avoid using login credentials for negative test cases, as it results in account lockouts. The FNFED7 account is currently locked due to this.
+import { Then } from '@cucumber/cucumber';
+import { expect } from '@playwright/test';
+
+Then('I should see the following options', async function (dataTable) {
+  const expectedOptions = dataTable.raw().flat();
+
+  const containerLocator = this.page.locator('//div[contains(@class, "Cell_cellTextContainer")]');
+
+  const blockCount = await containerLocator.count();
+  expect(blockCount).toBe(expectedOptions.length, `Expected ${expectedOptions.length} blocks, but found ${blockCount}`);
+
+
+  for (let i = 0; i < expectedOptions.length; i++) {
+    const expectedOption = expectedOptions[i];
+    const blockTitleLocator = containerLocator.nth(i).locator('h3'); 
+    const actualOptionText = await blockTitleLocator.textContent();
+    const normalizedActualText = actualOptionText.trim();
+
+
+    expect(normalizedActualText).toBe(expectedOption, `Block ${i + 1} title mismatch: Expected "${expectedOption}", actual "${normalizedActualText}"`);
+  }
+});
