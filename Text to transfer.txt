@@ -1,3 +1,1 @@
-Please note that the default branch in this repository is develop. Kindly ensure that you check out and work only on the develop branch.
-
-All changes are integrated into the main branch from develop as part of the release process.
+Please avoid using login credentials for negative test cases, as it results in account lockouts. The FNFED7 account is currently locked due to this.
