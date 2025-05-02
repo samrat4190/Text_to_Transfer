@@ -1,62 +1,200 @@
-import { Then, When } from "@cucumber/cucumber";
-import LoginPage from "../pages/loginPage";
+import { Page, expect } from "@playwright/test";
 import utility from "../../utility/utilityMethods";
-import asserts from "../../assertions/assert";
-import { page } from "../hooks/hooks";
-import myAccountPage from "../pages/myAccountPage";
-import { copySync } from "fs-extra";
-import Assert from "../../assertions/assert";
-import { expect } from "@playwright/test";
-import { randomInt } from "crypto";
+let text: string;
+export default class MyAccountPage {
+    constructor(page: Page) { }
+    myAccountLocators = {
+        "profile": {
+            "accountDetailsPage": "//h1[text()='Profile']",           
+            "profileOptions": "ul[class='abyss-c-CjVgg SideNavigationLayout_side-navigation-layout__menu___SAU5 abyss-sub-navigation-menu-items'] li",
+            "breadcrumbsCurrentPage": "nav[aria-label='Breadcrumbs'] ol li[aria-current='page']",
+            "breadcrumbsInBenefits": "(//nav[@aria-label='Breadcrumbs']//ol//a)",
+            "breadcrumbs": "nav[aria-label='Breadcrumbs']",
+            "profileItemsTiles": "div[class='Profile_profileCellGroupContainer__dpK_b'] h2",
+            "containerLocator" : "//div[contains(@class, 'Cell_cellTextContainer')]",
+            "contactInformationTile":"a[href='/profile/contact-information']",
+            "contactInformationHeader":"a[href='/profile/contact-information'] h3",
+            "contactInformationTileDesc": "a[href='/profile/contact-information'] p",
+            "contactInformationTileIcon": "a[href='/profile/contact-information'] div[class*='Cell_cellStart__K5_wR'] svg use",
+            "contactInformationTileLinkIcon": "a[href='/profile/contact-information'] div[class*='Cell_cellLinkIcon__'] svg use",
+            "manageHSIdTile":"a[href*='https://nonprod.identity.healthsafe-id.com/']",
+            "manageHSIdHeader":"a[href*='https://nonprod.identity.healthsafe-id.com/'] h2",
+            "manageHSIdTileDesc": "a[href*='https://nonprod.identity.healthsafe-id.com/'] p",
+            "manageHSIdTileIcon": "a[href*='https://nonprod.identity.healthsafe-id.com/'] div[class*='Cell_cellIcon__'] svg use",
+            "manageHSIdTileLinkIcon": "a[href*='https://nonprod.identity.healthsafe-id.com/'] div[class*='Cell_cellLinkIcon__'] svg use",
+            "communicationPrefTile":"a[href='/profile/communication-preferences']",
+            "communicationPrefHeader":"a[href='/profile/communication-preferences'] h2",
+            "communicationPrefTileDesc": "a[href='/profile/communication-preferences'] p",
+            "communicationPrefTileIcon": "a[href='/profile/communication-preferences'] div[class*='Cell_cellIcon__'] svg use",
+            "communicationPrefTileLinkIcon": "a[href='/profile/communication-preferences'] div[class*='Cell_cellLinkIcon__'] svg use",
+            "contactUsTile":"a[href='/profile/contact-us']",
+            "contactUsHeader":"a[href='/profile/contact-us'] h2",
+            "contactUsTileDesc": "a[href='/profile/contact-us'] p",
+            "contactUsTileIcon": "a[href='/profile/contact-us'] div[class*='Cell_cellStart__'] img",
+            "contactUsTileLinkIcon": "a[href='/profile/contact-us'] div[class*='Cell_cellLinkIcon__'] svg use",
+        },
+        "contactInformation": {
+            "contactInformationBtn": "a[href='/profile/contact-information']",
+            "contactInfoIframe": "iframe[src*='/epmp-contact.html']",
+            "contactInfoEPMPPage": "epmp-contact[id='epmp-contact']",
+            "contactInfoEPMPHeader": "epmp-contact[id='epmp-contact'] h1",
+            "loggedinUserName": "epmp-contact[id='epmp-contact'] h2",
+            "emailID": "div[class*='cui-card-email-section cui-cts-card-with-arrow'] p",
+            "phoneNumbersCard": "div[class*='cui-cts-phone-card cui-cts-card-with-arrow']",
+            "phoneNumberValue": "p[class='cui-cts-MobilePhoneNumber css-15a32vp']",
+            "addressCard": "div[class*='cui-card-address-section cui-cts-card-with-arrow']",
+            "addressCardLabel": "div[class*='cui-card-address-section cui-cts-card-with-arrow'] header",
+            "addressCardValue": "div[class*='cui-card-address-section cui-cts-card-with-arrow'] p",
+            "emailAddressesCard": "div[class*='cui-card-email-section cui-cts-card-with-arrow']",
+            "primaryEmailAddressLabel": "div[class*='cui-card-email-view'] header",
+            "previousHeader": "div[class*='cui-card-header-wrapper'] h3",
+            "editButton": "div[class*='cui-card-action-with-buttons'] button",
+            "contactInformationHeader": "h1[class='cui-cts-title']",
+            "contactPersonalInfoHeader": "//h1[@class='cui-cts-title']",
+            "labelEmailAddress": "//span[@class='cui-cts-email-title OneLinkTx' and text()='Email addresses']",
+            "labelPhoneNumber": "div[class*='cui-cts-phone-card cui-cts-card-with-arrow'] header",
+            "editEmailLink": "div[class='cui-card-email-section cui-cts-card-with-arrow OneLinkNoTx css-1o9msgv']",
+            "backButton": "//button[@class='css-1tbpe80']",
+            "emailAddressHeaderOnEdit": "//h4[text()='Primary email address']",
+            "requiredFieldsText": "//p[text()='All fields required unless indicated as optional.']",
+            "emailAddresslabel": "//label[@class='css-m8qzha']",
+            "asterickIcon": "//span[@class='css-1d9b15e']",
+            "emailEditTextField": "//input[@type='text' and @name='electronicAddress']",
+            "emailEditSaveButton": "//button[@class='cui-button-primary css-2xsjsa' and @type='submit' and text()='Save']",
+            "emailEditCancelButton": "//button[@class='cui-button-secondary css-w5uoks' and @type='button' and text()='Cancel']",
+            "homePhone": "//p[@class='cui-cts-HomePhoneNumber css-mzykel']",
+            "workPhone": "//p[@class='cui-cts-WorkPhoneNumber css-mzykel']",
+            "mobilePhone": "//p[@class='cui-cts-MobilePhoneNumber css-mzykel']",
+            "editPhonepageHeader": "//h2[@class='css-mbn0c7' and text()='Phone numbers']",
+            "phoneEditButton": "button.cui-card-btn-edit.css-1wgu210[type='button']",
+            "homePhoneNumber": "(//div[@class='cui-card-children css-1bq96bd']//p[@class='cui-card-body-description css-kijr46'])[2]",
+            "removeHomePhone": "[type='button'][aria-label='Remove Home phone number']",
+            "workPhoneNumber": "(//div[@class='cui-card-children css-1bq96bd']//p[@class='cui-card-body-description css-kijr46'])[3]",
+            "removeWorkPhone": "[type='button'][aria-label='Remove Work phone number']",
+            "mobilePhoneNumber": "(//div[@class='cui-card-children css-1bq96bd']//p[@class='cui-card-body-description css-kijr46'])[4]",
+            "removeMobilePhone": "[type='button'][aria-label='Remove Mobile phone number']",
+        },
+        "manageHSID": {
+            "manageHSIDLink": "a[href='https://nonprod.identity.healthsafe-id.com/web/redirect?to=manage-profile']",
+            "confirmIdentity": "h1[id='page-title']",
+            "textMeBtn": "//button[@id='btnProceed']",
+            "codeInputField": "input#phoneCode",
+            "confirmBtn": "//button[@id='btnProceed']",
+            "securitySettingsPage": "//h1[@data-cy='typography-page-heading']",
+            "backToApplication": "a[id='go-back-acc-settings-link']",
+            "subheaderText": "div[id='page-subheading']",
+            "signinSettings": "h2[id='sign-in-header']",
+            "username": "//h3[@id='sign-in-settings-username']",
+            "usernameValue": "//p[@id='username-value']",
+            "editUserNameBtn": "//button[@id='username_id']",
+            "password": "//h3[@id='sign-in-settings-password']",
+            "passwordValue": "//p[@id='password-value']",
+            "editPasswordBtn": "//button[@id='password_id']",
+            "securitySettings": "//h2[@id='security-header']",
+            "securityInfoText": "//p[@id='security-info']",
+            "hsidEmail": "//h3[@id='sec-settings-email']",
+            "hsidEmailValue": "//p[@id='email-value']",
+            "editEmailBtn": "//button[@id='email_id']",
+            "sendEmailVerificationBtn": "//button[@id='send_verification_id']",
+            "accountVerification": "//h3[@id='sec-settings-phone']",
+            "accountVerificationValue": "//p[@id='phone-value']",
+            "editAccountVerificationBtn": "//button[@id='phone_id']",
+            "needHelp": "//h2[@id='footerTitle']",
+            "needHelpText": "//p[@id='footerHelpMessage']",
+            "settingsHelpLink": "//a[@id='footer-help-link']",
+            "AccessibilityhelpLink": "a[href='https://www.optum.com/accessibility.html']"
+        },
+        "communicationPreferences": {
+            "communicationPreferencesLink": "a[href='/profile/communication-preferences']",
+            "commPrefPageHeader": "div[class='CommunicationPref_communication-pref__title__0VT_p'] h2",
+            "allowEmailNotificationsHeader": "div[class='CommunicationPref_communication-pref__allow-email___eYqx']",
+            "cpHeader": "div[class*='cui-app cui-preferences css-'] h1",
+            "cpDescription": "div[class*='cui-pts-rich-text-container css-7saiwl']",  
+            "descTextLine1": "div[class='CommunicationPref_communication-pref__p2__uXKM0']",
+            "contactInformationLink": "//span[a=' contact information ']",
+            "allowEmailToggleBtn": "div[class*='abyss-toggle-switch'] input",
+            "acknowledgementText": "div[class='CommunicationPref_communication-pref__save-change__ClTFV']",
+            "saveButton": "//span[text()='Save changes']",
+            "inputEmailAddress": "input[class*='abyss-text-input']",
+            "allowEmailNotifyDesc1": "//div[contains(text(),'By opting in, you are allowing occasional emails with alerts, reminders and tips to help you stay on top of your new messages, activities and more.')]",
+            "allowEmailNotifyDesc2": "//div[contains(text(),'Email is not a secure method of communicating and carries some risk of being read by a third party. Email may be recurring.')]",
+            "allowEmailNotifyDesc3": "//div[contains(text(),'Updating your email address will update other email communications you are opted into.')]",
+            "notificationsReminders": "div[id='accordion__heading-Notifications_and_Reminders']",
+            "notificationsRemindersTitle": "div[id='accordion__heading-Notifications_and_Reminders'] span",
+            "notificationsRemindersText": "div[id='accordion__heading-Notifications_and_Reminders'] p",
+            "notificationsRemindersDesc1": "//div[@class='cui-pts-notifications-description css-jp5rnv'] //p[contains(text(), 'Enjoy the convenience')]",
 
-let login: LoginPage;
-let assert: asserts;
-let util: utility;
-let myAccount: myAccountPage;
+            "feedbackNotToday": "//span[text()='Not today']",
+            "personalizedEmailsSection": "div[id=accordion__heading-Medium_Sensitivity_Email_Consent]",
+            "personalizedEmailSubText": "div[id='accordion__heading-Medium_Sensitivity_Email_Consent'] p",
+            "personalizedEmailsExpandIcon": "div[id='accordion__heading-Medium_Sensitivity_Email_Consent'] svg",
+            "emailEditButton": "button[data-testid=edit-email]",
+            "emailEditPopupHeader": "div[class*='cui-modal-header css-'] h2",
+            "emailEditPopupCloseButton": "div[class*='cui-modal-header css-'] button",
+            "emailAddressInputField": "input[name='primaryEmail']",
+            "emailSaveButton": "div[class*='cui-button-row'] button[class*='cui-button-primary']",
+            "emailCancelButton": "div[class*='cui-button-row'] button[class*='cui-button-secondary']",
+            "emailUpdateStatus": "div[data-testid=message-wrapper]",
+            "personalizeMyEmailsSection": "div[class*='cui-pts-Medium_Sensitivity_Email_Consent-form-container']",
+            "personalizeMyEmailsHeader": "div[class*='cui-pts-Medium_Sensitivity_Email_Consent-form-container'] header",
+            "yesPersonalizeMyEmails": "input[id=Sensitive_email_consent_Y]",
+            "yesPersonalizeMyEmailsLabel": "label[for=Sensitive_email_consent_Y]",
+            "noPersonalizeMyEmails": "input[id=Sensitive_email_consent_N]",
+            "noPersonalizeMyEmailsLabel": "label[for=Sensitive_email_consent_N]",
+            "savePersonalizeEmails": "button[class*='cui-button-primary']",
+        },
+        "contactUs": {
+            "contactUs": "a[href='/profile/contact-us']",
+            "contactUsHeader": "//h2[text()='Contact us']",
+            "messageCareTeam": "span[id='opt_oh_ecs_bby_lp_msg_care_guide_std_reactive']",
+            "chatWindow": "div[data-lp-cust-id='maximizedWindow']",
+            "contactUsSupportText": "//p/span[@class='page_contact-us__content__MT0Ue']",
+            "labelPhone": "//h2[text()='Phone']",
+            "phoneNumberAssistText": "//div[@class='page_contact-us__MqTly']/p[contains(text(), 'Call')]",
+            "phoneAgentAvailability": "//p[contains(text(), 'Agents are available')]",
+            "labelChat": "//h2[text()='Chat']",
+            "sendMessageLink": "span[class='message-now']",
+            "chatMessageDescription": "//p[text()[contains(.,'You can also receive technical support via the chat or phone options above.')]]",
+            "labelTechnicalSupport": "//h2[text()='Support']",
+            "technicalSupportText1": "//div[@class='page_contact-us__MqTly']//p[4]",
+            "technicalSupportText2": "//div[@class='page_contact-us__MqTly']//p[5]",
+            "technicalSupportLink": "//button[text()='guide@optum.com']",
+        },
+        "deleteAccount": {
+            "deleteAccount": "//div[contains(@class, 'abyss-sub-navigation-menu-link-container')]//button[text()='Delete Account']",
+            "deleteAccountHeader": "//div[contains(text(), 'Delete Account')]",
+            "deleteAccountDetailText": ".page_delete-account__content__M6MYW",
+            "deleteAccountButton": "button[class='abyss-c-bhbokC abyss-c-bhbokC-cUbBKi-variant-destructive abyss-c-bhbokC-ifMRfDk-css abyss-button-root']",
+        },
+    }
 
-Then('I should see profile page', async function () {
-  util = new utility(page);
-  assert = new asserts(page);
-  myAccount = new myAccountPage(page);
-  await page.waitForTimeout(8000);
-  await assert.assertToBeVisible(myAccount.myAccountLocators.profile.accountDetailsPage);
-});
-
-let links;
-Then('I should see the following options', async function (dataTable) {
-  const options = dataTable.raw().flat();
-  //links = await util.getAllTexts(myAccount.myAccountLocators.profile.profileOptions);
- const containerBlockLocator =  myAccount.myAccountLocators.profile.containerLocator; 
- const blockCount = await  util.getCountOfElements(myAccount.myAccountLocators.profile.containerLocator);
- expect(blockCount).toBe(options.length);
- 
- for (let i = 0; i < options.length; i++) {
-  const expectedOption = options[i];
-  const blockTitleLocator = containerBlockLocator.nth(i).locator('h3'); 
-  const actualOptionText = await blockTitleLocator.textContent();
-  const normalizedActualText = actualOptionText.trim();
-  expect(normalizedActualText).toBe(expectedOption, `Block ${i + 1} title mismatch: Expected "${expectedOption}", actual "${normalizedActualText}"`);
-
-  // for (let i = 0; i < links.length; i++) {
-  //   if (options[i] == 'Manage HealthSafe ID') {
-  //     links[i] = links[i].split('opens')[0];
-  //   }
-  //   assert.assertStrings(options[i], links[i]);
-   }
-});
-
-//delete account steps
-When('I click on the Delete Account link', async function () {
-  await util.waitAndClick(myAccount.myAccountLocators.deleteAccount.deleteAccount);
-});
-
-Then('I should see the Delete Account page with header {string}', async function (header) {
-  await assert.assertText(myAccount.myAccountLocators.deleteAccount.deleteAccountHeader, header);
-});
-
-Then('I should see the Delete Account details', async function () {
-  await assert.assertToBeVisible(myAccount.myAccountLocators.deleteAccount.deleteAccountDetailText);
-});
-Then('I should see the Delete Account button', async function () {
-  await assert.assertToBeVisible(myAccount.myAccountLocators.deleteAccount.deleteAccountButton);
-});
+    myAccountConstants = {
+        "communicationPrefHeader": "Communication preferences",
+        "allowEmailNotifyLabel": "Allow email notifications",
+        "emailAddressLabel": "Email addresses",
+        "primaryEmailLabel": "Primary email address",
+        "phoneNumberLabel": "Phone numbers",
+        "phoneCallText": "Call 1-833-FDXWELL (1-833-339-9355) or the number on your member ID card for assistance.",
+        "phoneAgentAvailabilityText": "Agents are available Monday-Friday 7 a.m.-10p.m. CT. Closed most major holidays. FedEx Nurse and Care Advocates are available 24/7, including holidays.",
+        "personalizedEmailSectionSubText": "Messages to help you manage your individual health care needs.",
+        "emailNoChangesToSave": "There are no changes to be saved",
+        "emailUpdateSuccess": "Success: your email has been updated.",
+        "personalizeMyEmailsHeader": "Personalize my emails",
+        "contactInformationHeader": "Contact information",
+        "contactInformationDesc":"Update your email address, phone numbers and primary address.",
+        "manageHSIdHeader": "Manage HealthSafe ID",
+        "manageHSIdDesc":"Update your HealthSafe ID account, recovery settings and password.",
+        "communicationPrefDesc":"Manage the emails you receive.",
+        "contactUsHeader": "Contact us",
+        "contactUsDesc":"Find quick answers to your questions and assistance for any issues",
+    }
+    
+    myAccountAttributes = {
+        "contactInformationIcon":"#icon_optum_none_communication_mail",
+        "manageHSIdIcon": "#icon_optum_none_data_lock",
+        "communicationPrefIcon":"#icon_optum_none_communication_chat",
+        "contactUsIcon":"/question_mark.svg",
+        "navigationIcon": "#icon_material_filled_navigation_chevron_right",
+        "manageHSIdExtLink":"#icon_material_filled_action_open_in_new",
+    }
+}
