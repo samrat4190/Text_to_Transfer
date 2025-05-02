@@ -1,6 +1,62 @@
-get profile() {
-    return {
-      containerLocator: this.page.locator(this.containerBlockSelector),
-      profileOptions: async () => await this.page.$$eval(this.profileOptionsSelector, elements => elements.map(el => el.textContent.trim())),
-    };
-  }
+import { Then, When } from "@cucumber/cucumber";
+import LoginPage from "../pages/loginPage";
+import utility from "../../utility/utilityMethods";
+import asserts from "../../assertions/assert";
+import { page } from "../hooks/hooks";
+import myAccountPage from "../pages/myAccountPage";
+import { copySync } from "fs-extra";
+import Assert from "../../assertions/assert";
+import { expect } from "@playwright/test";
+import { randomInt } from "crypto";
+
+let login: LoginPage;
+let assert: asserts;
+let util: utility;
+let myAccount: myAccountPage;
+
+Then('I should see profile page', async function () {
+  util = new utility(page);
+  assert = new asserts(page);
+  myAccount = new myAccountPage(page);
+  await page.waitForTimeout(8000);
+  await assert.assertToBeVisible(myAccount.myAccountLocators.profile.accountDetailsPage);
+});
+
+let links;
+Then('I should see the following options', async function (dataTable) {
+  const options = dataTable.raw().flat();
+  //links = await util.getAllTexts(myAccount.myAccountLocators.profile.profileOptions);
+ const containerBlockLocator =  myAccount.myAccountLocators.profile.containerLocator; 
+ const blockCount = await  util.getCountOfElements(myAccount.myAccountLocators.profile.containerLocator);
+ expect(blockCount).toBe(options.length);
+ 
+ for (let i = 0; i < options.length; i++) {
+  const expectedOption = options[i];
+  const blockTitleLocator = containerBlockLocator.nth(i).locator('h3'); 
+  const actualOptionText = await blockTitleLocator.textContent();
+  const normalizedActualText = actualOptionText.trim();
+  expect(normalizedActualText).toBe(expectedOption, `Block ${i + 1} title mismatch: Expected "${expectedOption}", actual "${normalizedActualText}"`);
+
+  // for (let i = 0; i < links.length; i++) {
+  //   if (options[i] == 'Manage HealthSafe ID') {
+  //     links[i] = links[i].split('opens')[0];
+  //   }
+  //   assert.assertStrings(options[i], links[i]);
+   }
+});
+
+//delete account steps
+When('I click on the Delete Account link', async function () {
+  await util.waitAndClick(myAccount.myAccountLocators.deleteAccount.deleteAccount);
+});
+
+Then('I should see the Delete Account page with header {string}', async function (header) {
+  await assert.assertText(myAccount.myAccountLocators.deleteAccount.deleteAccountHeader, header);
+});
+
+Then('I should see the Delete Account details', async function () {
+  await assert.assertToBeVisible(myAccount.myAccountLocators.deleteAccount.deleteAccountDetailText);
+});
+Then('I should see the Delete Account button', async function () {
+  await assert.assertToBeVisible(myAccount.myAccountLocators.deleteAccount.deleteAccountButton);
+});
