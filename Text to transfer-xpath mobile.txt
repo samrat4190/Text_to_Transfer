@@ -1,0 +1,6 @@
+get profile() {
+    return {
+      containerLocator: this.page.locator(this.containerBlockSelector),
+      profileOptions: async () => await this.page.$$eval(this.profileOptionsSelector, elements => elements.map(el => el.textContent.trim())),
+    };
+  }
