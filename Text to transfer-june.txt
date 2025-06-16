@@ -1,7 +1,1 @@
-Please be very mindful and strictly adhere to proper scenario writing when creating feature files.
-
-👉 Use "The user" instead of "I" in all steps, and ensure there are no extra spaces.
-
-👉 Keep pulling the latest changes from core regularly. When merging, please ensure that other files are not altered or deleted — be extra careful and vigilant about this.
-
-👉 IMPORTANT: Do not modify existing methods in the step definitions, as this may break existing test cases. If you need to reuse an existing method, simply add your required annotations without changing the current ones.
+It has come to my attention that the PR was raised without executing the code locally. This practice is not acceptable, as it can lead to integration issues — such as the ones we're now facing after pulling the latest changes. Please ensure that all code is compiled and tested locally before raising a PR to maintain the stability and integrity of the codebase
